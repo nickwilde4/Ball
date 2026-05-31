@@ -1,70 +1,52 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <iterator>
 using namespace sf;
 int main() {
+
+
+    unsigned int tall = 750, large = 1850;
     sf::RenderWindow window(
-        sf::VideoMode({1000, 500}),
-        "Nick wilde"
-    );
-
+        sf::VideoMode({large, tall}),
+        "Ball_SMLF" );
     window.setFramerateLimit(60);
-
-    float y1 = 0.f, y2 = 50.f, y3 = 100.f , speed3 = 5.f, speed2 = 5.f, speed1 = 5.f;
-    bool wall1 = 1, wall2 = 1, wall3 = 1;
-    sf::CircleShape circle1(50.f);
-    circle1.setPosition({200.f,y1});
-    
-    sf::CircleShape circle2(50.f);
-    circle2.setPosition({500.f,y2});
-
-    sf::CircleShape circle3(50.f);
-    circle3.setPosition({700.f,y3});
-
+    struct balls {
+    float y;
+    float x;
+    float speed;
+    bool wall;
+    float radius;
+    sf::CircleShape circle;
+    };
+    balls ball[1850];
+    for (int i = 0; i < std::size(ball); ++i){
+        ball[i].radius = 0.5;
+        ball[i].x = (2*ball[i].radius) * i;
+        ball[i].y = i * (ball[i].radius*0.8);
+        ball[i].wall = 1;
+        ball[i].speed = 5.f;
+        ball[i].circle = sf::CircleShape(ball[i].radius);
+        ball[i].circle.setPosition({ball[i].x,ball[i].y});
+    }
     while (window.isOpen()) {
-
         while (const std::optional event = window.pollEvent()) {
-
             if (event->is<sf::Event::Closed>())
                 window.close();
         }
-        if (wall1) { y1 +=speed1; 
-            speed1+= 0.06;}
-        else if (!wall1) {
-            y1 -=speed1;
-            speed1-= 0.1;}
-        
-        if (y1>400.f) {wall1 = 0;}
-        else if (speed1 <= 0) { wall1 = 1;}
-
-
-        if (wall2) { y2 +=speed2; 
-            speed2+= 0.06;}
-        else if (!wall2) {
-            y2 -=speed2;
-            speed2-= 0.1;}
-        
-        if (y2>400.f) {wall2 = 0;}
-        else if (speed2 <= 0) { wall2 = 1;}
-
-
-      if (wall3) { y3 +=speed3; 
-            speed3+= 0.06;}
-        else if (!wall3) {
-            y3 -=speed3;
-            speed3-= 0.1;}
-        
-        if (y3>400.f) {wall3 = 0;}
-        else if (speed3 <= 0) { wall3 = 1;}
-
-
-        circle1.setPosition({200.f,y1});
-        circle2.setPosition({500.f,y2});
-        circle3.setPosition({700.f,y3});
-
+        for (int i = 0; i < std::size(ball); ++i) {
+        if (ball[i].wall) { ball[i].y += ball[i].speed; 
+            ball[i].speed += 0.06;}
+        else if (!(ball[i].wall)) {
+           ball[i].y -=ball[i].speed;
+            ball[i].speed-= 0.1;}
+        if (ball[i].y>(tall-ball[i].radius *2)) {ball[i].wall = 0;}
+        else if (ball[i].speed <= 0) {ball[i].wall = 1;}
+        ball[i].circle.setPosition({ball[i].x, ball[i].y});
+        }
         window.clear();
-        window.draw(circle1);
-        window.draw(circle2);
-        window.draw(circle3);
+        for (int i = 0; i < std::size(ball); ++i) {
+        window.draw(ball[i].circle);
+        }
         window.display();
-
     }
 }
